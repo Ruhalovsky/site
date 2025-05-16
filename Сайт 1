@@ -1,0 +1,280 @@
+import { useState } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { motion, AnimatePresence } from "framer-motion";
+
+const characters = [
+  {
+    id: 1,
+    name: "Рис",
+    img: "https://cs13.pikabu.ru/post_img/2019/03/30/8/1553948339190232038.jpg",
+    description:
+      "Амбициозный сотрудник Hyperion с механической рукой и кибернетическим глазом.",
+    details: {
+      fullName: "Рис",
+      role: "Бывший сотрудник Hyperion, позже глава Atlas",
+      allegiance: "Hyperion (ранее), Atlas",
+      background:
+        "Вырос на орбитальной станции Helios. Стал одним из руководителей проекта по поиску Хранилища.",
+      firstAppearance: "Эпизод 1 (2014)",
+      skills: ["Взлом через ECHO‑eye", "Лидерство", "Импровизация"],
+      weapons: ["Энергетический пистолет", "Электрошоковый жезл"],
+      quotes: [
+        "It's cool! I'm cool!",
+        "Богатство, слава, уважение… по порядку."
+      ]
+    }
+  },
+  {
+    id: 2,
+    name: "Фиона",
+    img: "https://www.themoviefashion.com/wp-content/uploads/2023/11/Borderlands-Fiona-Brown-Coat.jpg",
+    description:
+      "Мошенница с Пандоры, мечтающая о большом куше.",
+    details: {
+      fullName: "Фиона",
+      role: "Профессиональная мошенница",
+      allegiance: "Собственные интересы, семья",
+      background:
+        "Воспитана приёмным отцом‑авантюристом Феликсом. Специализируется на афёрах.",
+      firstAppearance: "Эпизод 1 (2014)",
+      skills: ["Красноречие", "Карманные кражи", "Снайперская стрельба"],
+      weapons: ["Деринджер с элементальными апгрейдами"],
+      quotes: [
+        "Не выглядишь ты на миллион.",
+        "Планы никогда не идут по плану."
+      ]
+    }
+  },
+  {
+    id: 3,
+    name: "Саша",
+    img: "https://static0.gamerantimages.com/wordpress/wp-content/uploads/2021/03/Flirty-Sasha.jpg",
+    description: "Сестра Фионы и эксперт по оружию.",
+    details: {
+      fullName: "Саша",
+      role: "Контрабандистка, оружейный эксперт",
+      allegiance: "Семья, близкие",
+      background: "Младшая сестра Фионы, выросла на улицах Хэллоу‑Пойнт.",
+      firstAppearance: "Эпизод 1 (2014)",
+      skills: ["Обращение с огнестрелом", "Смекалка"],
+      weapons: ["Tediore SMG", "Пистолет‑пулемёт"],
+      quotes: ["Придётся стрелять? Отлично!"]
+    }
+  },
+  {
+    id: 4,
+    name: "Вон",
+    img: "https://st.overclockers.ru/images/lab/2019/10/07/1/006_cover1_big.jpg",
+    description:
+      "Лучший друг Риса, увлекающийся финансами и приключениями.",
+    details: {
+      fullName: "Вон",
+      role: "Бухгалтер Hyperion / Повелитель бандитов",
+      allegiance: "Рис, друзья",
+      background:
+        "Был офисным клерком, но на Пандоре стал лидером местных бандитов.",
+      firstAppearance: "Эпизод 1 (2014)",
+      skills: ["Финансовый анализ", "Управление людьми", "Кувырки"],
+      weapons: ["Наглость", "Грудные мышцы"],
+      quotes: ["Я умею делать таблицы. И подтягиваться!"]
+    }
+  },
+  {
+    id: 5,
+    name: "Лоудер Бот",
+    img: "https://images.steamusercontent.com/ugc/959724006845424024/D2280A81F1B41D9CD160D559B2190A3DF9120AED/?imw=512&&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=false",
+    description: "Боевой робот Hyperion c чувством юмора.",
+    details: {
+      fullName: "Loader Bot, модель LB‑RB",
+      role: "Боевой и сервисный робот",
+      allegiance: "Рис и компания",
+      background:
+        "Серия роботов Hyperion, этот экземпляр обрёл личность и саркастический юмор.",
+      firstAppearance: "Эпизод 1 (2014)",
+      skills: ["Тяжёлое вооружение", "Саморемонт", "Сарказм"],
+      weapons: ["Гатлинг", "Ракетницы", "Щит"],
+      quotes: ["Цель уничтожена. Продолжайте хорошую работу."]
+    }
+  },
+  {
+    id: 6,
+    name: "Гортис",
+    img: "https://fanfics.me/images/fandoms_heroes/955-1518482153.jpg",
+    description: "Очаровательный робот, ищущий Врата в Хранилище.",
+    details: {
+      fullName: "Гортис, прототип бренда Atlus",
+      role: "Навигационный робот к Вратам Хранилища",
+      allegiance: "Команда искателей Хранилища",
+      background:
+        "Создан доктором Кассандрой для активации Врат к Хранилищу Странника.",
+      firstAppearance: "Эпизод 2 (2015)",
+      skills: ["Сканирование", "Модульное расширение", "Оптимизм"],
+      weapons: ["Боевой режим Mk.II (гигант)"],
+      quotes: ["Всегда приятно помогать друзьям!", "Обнимашки?!"]
+    }
+  }
+];
+
+export default function CharacterSelectSite() {
+  const [selected, setSelected] = useState(null);
+  const [confirmed, setConfirmed] = useState(false);
+
+  const handleConfirm = () => {
+    setConfirmed(true);
+  };
+
+  const handleReset = () => {
+    setSelected(null);
+    setConfirmed(false);
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-[#111827] to-[#1f2937] text-white p-6">
+      <h1 className="text-4xl font-bold text-center mb-8">Выберите персонажа</h1>
+
+      {/* Сетка карточек выбирается, пока не подтверждено */}
+      {!confirmed && (
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 max-w-6xl mx-auto">
+          {characters.map((char) => (
+            <motion.div
+              key={char.id}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.97 }}
+              layout
+            >
+              <Card
+                onClick={() => {
+                  setSelected(char);
+                  setConfirmed(false);
+                }}
+                className={`cursor-pointer transition-shadow ${
+                  selected?.id === char.id
+                    ? "ring-4 ring-yellow-500 shadow-xl"
+                    : "hover:ring-2 hover:ring-yellow-400"
+                }`}
+              >
+                <CardContent className="p-0">
+                  <img
+                    src={char.img}
+                    alt={char.name}
+                    className="w-full h-64 object-cover rounded-t-2xl"
+                  />
+                  <div className="p-4">
+                    <h2 className="text-xl font-semibold mb-2">{char.name}</h2>
+                    <p className="text-sm opacity-80 line-clamp-3">
+                      {char.description}
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ))}
+        </div>
+      )}
+
+      {/* Подтверждение выбора */}
+      {!confirmed && selected && (
+        <motion.div
+          layout
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 20 }}
+          className="max-w-xl mx-auto mt-10 bg-gray-800/60 backdrop-blur-sm p-6 rounded-2xl shadow-inner"
+        >
+          <h2 className="text-2xl font-bold mb-4">Вы выбрали: {selected.name}</h2>
+          <p className="mb-6">{selected.description}</p>
+          <div className="flex gap-4">
+            <Button onClick={handleConfirm}>Подтвердить выбор</Button>
+            <Button variant="secondary" onClick={handleReset}>
+              Отмена
+            </Button>
+          </div>
+        </motion.div>
+      )}
+
+      {/* Полная информация о персонаже после подтверждения */}
+      <AnimatePresence>
+        {confirmed && selected && (
+          <motion.div
+            key="details"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 30 }}
+            className="max-w-4xl mx-auto mt-10 bg-gray-900/70 backdrop-blur-md p-8 rounded-2xl shadow-2xl"
+          >
+            <div className="flex flex-col md:flex-row gap-8">
+              <img
+                src={selected.img}
+                alt={selected.name}
+                className="w-full md:w-1/3 h-auto rounded-2xl object-cover shadow-lg"
+              />
+
+              <div className="flex-1 space-y-4">
+                <h2 className="text-3xl font-bold">{selected.name}</h2>
+                <ul className="space-y-1 text-sm opacity-90">
+                  <li>
+                    <span className="font-semibold">Полное имя:</span> {" "}
+                    {selected.details.fullName}
+                  </li>
+                  <li>
+                    <span className="font-semibold">Роль:</span> {" "}
+                    {selected.details.role}
+                  </li>
+                  <li>
+                    <span className="font-semibold">Принадлежность:</span> {" "}
+                    {selected.details.allegiance}
+                  </li>
+                  <li>
+                    <span className="font-semibold">Первое появление:</span> {" "}
+                    {selected.details.firstAppearance}
+                  </li>
+                </ul>
+
+                <div>
+                  <h3 className="text-xl font-semibold mb-1">Биография</h3>
+                  <p className="text-sm opacity-80">
+                    {selected.details.background}
+                  </p>
+                </div>
+
+                <div className="flex flex-wrap gap-6">
+                  <div>
+                    <h3 className="text-xl font-semibold mb-1">Навыки</h3>
+                    <ul className="list-disc list-inside text-sm opacity-80 space-y-1">
+                      {selected.details.skills.map((skill) => (
+                        <li key={skill}>{skill}</li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h3 className="text-xl font-semibold mb-1">Оружие</h3>
+                    <ul className="list-disc list-inside text-sm opacity-80 space-y-1">
+                      {selected.details.weapons.map((w) => (
+                        <li key={w}>{w}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+
+                <div>
+                  <h3 className="text-xl font-semibold mb-1">Цитаты</h3>
+                  <ul className="list-disc list-inside text-sm italic opacity-70 space-y-1">
+                    {selected.details.quotes.map((q) => (
+                      <li key={q}>&ldquo;{q}&rdquo;</li>
+                    ))}
+                  </ul>
+                </div>
+
+                <Button className="mt-6" onClick={handleReset}>
+                  Вернуться к выбору персонажа
+                </Button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
